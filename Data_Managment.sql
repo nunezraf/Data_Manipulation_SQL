@@ -87,10 +87,27 @@ update actor
 set first_name = 'GROUCHO'
 where first_name = 'HARPO' ;
 
-/* 5a. You cannot locate the schema of the `address` table. Which query would you use to re-create it? 
-SHOW CREATE TABLE tbl_name
+/* 5a. You cannot locate the schema of the `address` table. Which query would you use to re-create it? */
+SHOW COLUMNS from sakila.address;
 
-*/
+SHOW CREATE TABLE sakila.address;
+
+/* CREATE TABLE `address` (
+  `address_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `address` varchar(50) NOT NULL,
+  `address2` varchar(50) DEFAULT NULL,
+  `district` varchar(20) NOT NULL,
+  `city_id` smallint(5) unsigned NOT NULL,
+  `postal_code` varchar(10) DEFAULT NULL,
+  `phone` varchar(20) NOT NULL,
+  `location` geometry NOT NULL,
+  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`address_id`),
+  KEY `idx_fk_city_id` (`city_id`),
+  SPATIAL KEY `idx_location` (`location`),
+  CONSTRAINT `fk_address_city` FOREIGN KEY (`city_id`) REFERENCES `city` (`city_id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=606 DEFAULT CHARSET=utf8 */
+
 
 /*6a. Use `JOIN` to display the first and last names, as well as the address, of each staff member. Use the tables `staff` and `address`:*/
 
@@ -171,14 +188,13 @@ where category = 'Family';
 
  /* 7e. Display the most frequently rented movies in descending order.*/
  
- select  i.film_id, f.title, count(r.inventory_id)
-from inventory i
-inner join rental r
-on i.inventory_id = r.inventory_id
-inner join film_text f 
-on i.film_id = f.film_id
-group by r.inventory_id
-order by  count(r.inventory_id) desc;
+SELECT f.title , COUNT(r.rental_id) AS "Number of Rentals" FROM film f
+RIGHT JOIN inventory i
+ON f.film_id = i.film_id
+JOIN rental r 
+ON r.inventory_id = i.inventory_id
+GROUP BY f.title
+ORDER BY COUNT(r.rental_id) DESC;
 
 /* 7f. Write a query to display how much business, in dollars, each store brought in. */ 
 
